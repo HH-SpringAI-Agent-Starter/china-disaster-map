@@ -14,6 +14,7 @@
 |------|------|
 | GitHub Pages（实时更新，推荐） | https://hh-springai-agent-starter.github.io/china-disaster-map/ |
 | 成品交互页（直接打开） | https://hh-springai-agent-starter.github.io/china-disaster-map/disaster_map_city.html |
+| 一线城市 / 新一线安全排名（独立页） | https://hh-springai-agent-starter.github.io/china-disaster-map/tier1_ranking.html |
 | 仓库主页 | https://github.com/HH-SpringAI-Agent-Starter/china-disaster-map |
 
 > 根路径 `index.html` 会自动跳转到完整交互页面 `disaster_map_city.html`。
@@ -115,6 +116,8 @@ python gen_html_city.py    # 生成 disaster_map_city.html
 |------|------|
 | `index.html` | 入口跳转页，自动打开完整交互地图 |
 | `disaster_map_city.html` | **成品页面**（自包含，含双地图 + 搜索 + 安全面板 + 城市全量排名 / 县级减产查询，~1.4MB） |
+| `tier1_ranking.html` | **一线城市 / 新一线安全排名独立页**（可分享，支持一线/新一线/全部切换、搜索、分页、导出 CSV，~72KB） |
+| `gen_tier1_html.py` | 由 `city_data.json` 生成 `tier1_ranking.html` |
 | `disaster_data.json` | **唯一数据源**：灾害事件（年月可检索）+ 元数据 |
 | `city_data.json` | 各城市分级与安全指数（由 `gen_city_map.py` 生成） |
 | `city_2026.svg` / `city_century.svg` | 左 / 右两栏地图的 SVG 源 |

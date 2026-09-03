@@ -50,10 +50,14 @@ for t in top:
     if t['name'] not in _seen:
         _nat.append(t); _seen.add(t['name'])
 _nat.sort(key=lambda c: (-c['safety'], c['prov'], c['name']))
+FIRST_TIER = {'北京','上海','广州','深圳'}
+NEW_TIER = {'成都','重庆','杭州','武汉','西安','苏州','南京','天津','长沙','郑州','东莞','青岛','沈阳','宁波','昆明'}
 NAT_DATA = [{'name': c['name'], 'prov': c['prov'], 'safety': c['safety'],
              'tierLabel': TIER_NAME[tier(c['safety'])], 'tierColor': TIER_COLOR[tier(c['safety'])],
              'note': (c.get('note') or ''),
-             'search': (c['name'] + ' ' + c['prov'] + ' ' + TIER_NAME[tier(c['safety'])] + ' ' + (c.get('note') or '')).lower()}
+             'search': (c['name'] + ' ' + c['prov'] + ' ' + TIER_NAME[tier(c['safety'])] + ' ' + (c.get('note') or '')).lower(),
+             't1': c['name'] in FIRST_TIER or c['prov'] in FIRST_TIER,
+             'new': c['name'] in NEW_TIER or c['prov'] in NEW_TIER}
             for c in _nat]
 nat_json = json.dumps(NAT_DATA, ensure_ascii=False).replace('</', '<\\/')
 
@@ -103,7 +107,7 @@ HTML = r'''<!DOCTYPE html>
 * { box-sizing:border-box;margin:0;padding:0 }
 body { background:#0F1319;color:#E6EBF0;font-family:"Noto Sans SC","PingFang SC",sans-serif;
   padding:28px 32px 40px;line-height:1.5 }
-.wrap { max-width:1240px;margin:0 auto }
+.wrap { max-width:1600px;margin:0 auto }
 header { border-bottom:1px solid #232B35;padding-bottom:18px;margin-bottom:18px }
 h1 { font-size:34px;font-weight:800;letter-spacing:.5px }
 .sub { color:#94A0AE;font-size:15px;margin-top:6px }
@@ -122,10 +126,17 @@ input { min-width:150px }
 .scale { display:flex;align-items:center;gap:6px }
 .sw { width:26px;height:16px;border-radius:3px;display:inline-block }
 .maps { display:flex;gap:24px;flex-wrap:wrap }
-.mapcard { flex:1 1 480px;background:#11161D;border:1px solid #232B35;border-radius:12px;padding:14px;position:relative }
+.mapcard { flex:1 1 720px;background:#11161D;border:1px solid #232B35;border-radius:12px;padding:14px;position:relative }
 .mapcard h2 { font-size:18px;font-weight:700;margin-bottom:4px }
 .mapcard .cap { font-size:12px;color:#8E99A6;margin-bottom:10px }
 .map { width:100%;height:auto;display:block;border-radius:8px;background:#11161D }
+.mapcard svg { cursor:zoom-in }
+.mapzoom { position:fixed;inset:0;background:rgba(5,8,12,.94);z-index:200;display:none;align-items:center;justify-content:center;padding:28px;cursor:zoom-out }
+.mapzoom.show { display:flex }
+.mapzoom-inner { width:min(96vw,1500px);max-height:90vh;overflow:auto;background:#11161D;border:1px solid #2E3A47;border-radius:12px;padding:16px }
+.mapzoom-inner svg { width:100%;height:auto;display:block }
+.zoomhint { font-size:12px;color:#6E7A88;margin:6px 0 2px }
+.btn:disabled { opacity:.5;cursor:default }
 .city path { transition:opacity .15s, filter .15s;cursor:pointer }
 .city:hover path { filter:brightness(1.5);stroke:#fff;stroke-width:.8 }
 .city.dim { opacity:.14 }
@@ -202,6 +213,7 @@ body.yieldmode .tier1hint { display:block }
     <div class="field"><label>灾害类型</label><select id="fType"><option value="all">全部</option></select></div>
     <div class="field"><label>关键词</label><input id="fKw" placeholder="城市 / 流域 / 关键词" /></div>
     <button class="btn primary" id="bReset">重置</button>
+    <button class="btn" id="bRefresh">更新数据</button>
     <button class="btn" id="bGlow">高亮最安全城市</button>
     <button class="btn" id="bDanger">高亮高危城市</button>
     <button class="btn" id="bNat">全国城市安全排名</button>
@@ -226,6 +238,7 @@ body.yieldmode .tier1hint { display:block }
   <div class="mapcard"><h2>1926 – 2026 · 百年累计</h2>
     <div class="cap">按重大灾害频次与伤亡规模综合分级</div>__SVG2__</div>
 </div>
+<div class="zoomhint">💡 点击任一地图可全屏放大查看</div>
 
 <div class="panel">
   <h2>综合安全指数 · 最安全地级市</h2>
@@ -241,7 +254,7 @@ body.yieldmode .tier1hint { display:block }
   <h2>全国城市 · 自然灾害安全排名</h2>
   <div class="lead">特殊查询：库内全部城市与市辖区（共 __NATCOUNT__ 个）按自然灾害暴露安全指数降序全量排名，自然包含并排好了全部一线 / 新一线城市。指数口径与上方“综合安全指数”一致（100 − 灾害权重惩罚）。</div>
   <div class="tier1hint">仅显示本板块；恢复请点“重置”。</div>
-  <div class="plistbar"><input class="pfilter" id="natFilter" placeholder="按城市 / 省筛选…" /><select class="psel" id="natSize"><option>50</option><option>100</option><option>200</option></select><button class="pgbtn" id="natGroup">按省分组</button><button class="pgbtn" id="natExport" data-file="城市安全排名.csv">导出 CSV</button></div>
+  <div class="plistbar"><input class="pfilter" id="natFilter" placeholder="按城市 / 省筛选…" /><select class="psel" id="natSize"><option>50</option><option>100</option><option>200</option></select><button class="pgbtn" id="natT1">一线城市</button><button class="pgbtn" id="natNew">新一线</button><button class="pgbtn" id="natGroup">按省分组</button><button class="pgbtn" id="natExport" data-file="城市安全排名.csv">导出 CSV</button></div>
   <div class="natlist" id="natList"></div>
   <div class="pager" id="natPager"></div>
   <div class="lead" style="margin-top:14px">说明：本排名为自然灾害暴露度示意，非城市综合安全评价；“安全”仅衡量自然灾害暴露度，不含经济、人口、基础设施与防灾能力。</div>
@@ -269,6 +282,7 @@ body.yieldmode .tier1hint { display:block }
 </div>
 </div>
 <div id="tip"></div>
+<div class="mapzoom" id="mapZoom"><div class="mapzoom-inner" id="mapZoomInner"></div></div>
 <script id="fallback" type="application/json">__FALLBACK__</script>
 <script>
 const DATA_URL = "__DATA_URL__";
@@ -287,14 +301,17 @@ document.querySelectorAll('.city').forEach(g => {
   g.addEventListener('mouseleave', () => tip.style.opacity = 0);
 });
 
-// 数据加载：优先在线，失败回退内置
-fetch(DATA_URL).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
-  DATA = d; document.getElementById('src').textContent =
-    '数据来源：在线更新（updated ' + (d.meta && d.meta.updated || '?') + '）· ' + (d.events ? d.events.length : 0) + ' 条事件';
-}).catch(() => {
-  document.getElementById('src').textContent =
-    '数据来源：本地内置（离线）· ' + (FALLBACK.events ? FALLBACK.events.length : 0) + ' 条事件';
-});
+// 数据加载：优先在线，失败回退内置；可手动触发（更新数据按钮）
+function refreshData(){
+  return fetch(DATA_URL).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
+    DATA = d; document.getElementById('src').textContent =
+      '数据来源：在线更新（updated ' + (d.meta && d.meta.updated || '?') + '）· ' + (d.events ? d.events.length : 0) + ' 条事件';
+    apply();
+  }).catch(() => {
+    document.getElementById('src').textContent =
+      '数据来源：本地内置（离线）· ' + (FALLBACK.events ? FALLBACK.events.length : 0) + ' 条事件';
+  });
+}
 
 const EVENTS = () => (DATA && DATA.events) || [];
 const META = () => (DATA && DATA.meta) || {};
@@ -307,9 +324,9 @@ function buildControls() {
   const evs = EVENTS();
   const years = Array.from(new Set(evs.map(e => e.year))).sort((a,b)=>b-a);
   fYear.innerHTML = '<option value="all">全部</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-  for (let m=1; m<=12; m++) fMonth.innerHTML += `<option value="${m}">${m} 月</option>`;
+  fMonth.innerHTML = '<option value="all">全部</option>' + Array.from({length:12},(_,i)=>`<option value="${i+1}">${i+1} 月</option>`).join('');
   const types = (META().types) || Array.from(new Set(evs.map(e=>e.type)));
-  fType.innerHTML += types.map(t => `<option value="${t}">${t}</option>`).join('');
+  fType.innerHTML = '<option value="all">全部</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
 }
 function clearHL() {
   document.querySelectorAll('.city').forEach(g => g.classList.remove('hit','dim'));
@@ -396,12 +413,18 @@ function yieldItem(d){
     ${d.main||d.city?`<div class="rnote">主要灾害：${esc(d.main)}　｜　归属：${esc(d.city)}</div>`:''}</div>`;
 }
 function setupSpecial(cfg){
-  const {box, pager, filterInput, sizeSel, groupBtn, exportBtn, data, renderItem, groupKey, searchOf, cols} = cfg;
+  const {box, pager, filterInput, sizeSel, groupBtn, exportBtn, data, renderItem, groupKey, searchOf, cols, matchFlags} = cfg;
   if(!box || !pager) return;
   let per = parseInt(sizeSel && sizeSel.value) || 50, page = 1, grouped = false;
+  const activeFlags = new Set();
+  (matchFlags||[]).forEach(mf => { const b=mf.btn; if(!b) return;
+    b.addEventListener('click', () => { if(activeFlags.has(mf.field)){ activeFlags.delete(mf.field); b.classList.remove('on'); } else { activeFlags.add(mf.field); b.classList.add('on'); } page=1; render(); }); });
   function filtered(){
     const q = (filterInput && filterInput.value || '').trim().toLowerCase();
-    return q ? data.filter(d => searchOf(d).indexOf(q) >= 0) : data.slice();
+    let arr = data;
+    if(activeFlags.size) arr = arr.filter(d => { for(const f of activeFlags) if(d[f]) return true; return false; });
+    if(q) arr = arr.filter(d => searchOf(d).indexOf(q) >= 0);
+    return arr;
   }
   function render(){
     const q = (filterInput && filterInput.value || '').trim().toLowerCase();
@@ -459,6 +482,7 @@ setupSpecial({box:document.getElementById('natList'), pager:document.getElementB
   filterInput:document.getElementById('natFilter'), sizeSel:document.getElementById('natSize'),
   groupBtn:document.getElementById('natGroup'), exportBtn:document.getElementById('natExport'),
   data:NAT_DATA, renderItem:natItem, groupKey:d=>d.prov, searchOf:d=>d.search,
+  matchFlags:[{btn:document.getElementById('natT1'),field:'t1'},{btn:document.getElementById('natNew'),field:'new'}],
   cols:[{key:'name',label:'城市'},{key:'prov',label:'省份'},{key:'safety',label:'安全指数'},{key:'tierLabel',label:'风险档'},{key:'note',label:'备注'}]});
 setupSpecial({box:document.getElementById('yieldList'), pager:document.getElementById('yieldPager'),
   filterInput:document.getElementById('yieldFilter'), sizeSel:document.getElementById('yieldSize'),
@@ -466,8 +490,26 @@ setupSpecial({box:document.getElementById('yieldList'), pager:document.getElemen
   data:COUNTY_DATA, renderItem:yieldItem, groupKey:d=>d.prov, searchOf:d=>d.search,
   cols:[{key:'name',label:'县'},{key:'prov',label:'省份'},{key:'pct',label:'减产率_百分比'},{key:'tierLabel',label:'风险档'},{key:'main',label:'主要灾害'},{key:'city',label:'归属市'}]});
 
+// 地图点击全屏放大
+document.querySelectorAll('.mapcard svg').forEach(svg => {
+  svg.addEventListener('click', () => {
+    document.getElementById('mapZoomInner').innerHTML = svg.outerHTML;
+    document.getElementById('mapZoom').classList.add('show');
+  });
+});
+document.getElementById('mapZoom').addEventListener('click', () => {
+  document.getElementById('mapZoom').classList.remove('show');
+  document.getElementById('mapZoomInner').innerHTML = '';
+});
+
+// 手动更新在线数据
+const bRefresh = document.getElementById('bRefresh');
+bRefresh.onclick = () => { bRefresh.disabled = true; const t=bRefresh.textContent; bRefresh.textContent='更新中…';
+  refreshData().finally(()=>{ bRefresh.disabled=false; bRefresh.textContent=t; }); };
+
 buildControls();
 apply();
+refreshData();
 </script>
 </body></html>'''
 
