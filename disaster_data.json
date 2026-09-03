@@ -90,6 +90,15 @@
     { "year": 2026, "month": null, "type": "火灾", "region": "四川", "city": "成都", "detail": "双流区居民区火灾 5 死 2 伤", "level": 3, "source": "年度灾情通报" },
     { "year": 2026, "month": null, "type": "火灾", "region": "上海", "city": "上海", "detail": "松江区小区电动车起火", "level": 3, "source": "年度灾情通报" },
     { "year": 2026, "month": null, "type": "台风", "region": "华东、华南", "city": "", "detail": "台风“白海豚”等引发华东华南洪涝，多台风登陆", "level": 3, "source": "年度灾情通报" },
-    { "year": 2026, "month": 9, "type": "火灾", "region": "内蒙古", "city": "", "detail": "预计 9 月内蒙古东部森林火险等级较高", "level": 3, "source": "森林火险预报" }
+    { "year": 2026, "month": 9, "type": "火灾", "region": "内蒙古", "city": "", "detail": "预计 9 月内蒙古东部森林火险等级较高", "level": 3, "source": "森林火险预报" },
+    { "year": 2025, "month": 6, "type": "洪涝", "region": "广西", "city": "", "detail": "6月强降雨致柳州、桂林、钦州、防城港、北海、玉林、贵港等 11 条河流 17 站超警", "level": 3, "source": "中新网广西" },
+    { "year": 2026, "month": 6, "type": "洪涝", "region": "广西", "city": "柳州", "detail": "柳江2026年第1号洪水，柳州站洪峰85.64米、超警3.14米；融江、融水超警", "level": 4, "source": "广西水文中心/新华社" },
+    { "year": 2026, "month": 6, "type": "洪涝", "region": "广西", "city": "河池", "detail": "龙江金城江水文站出现1970年以来最大洪水，超警4.44米", "level": 4, "source": "广西水文中心/新华社" },
+    { "year": 2026, "month": 6, "type": "洪涝", "region": "广西", "city": "桂林", "detail": "桂江流域持续暴雨，漓江上游水库群拦蓄1.51亿m³，避免桂江编号洪水", "level": 3, "source": "广西水利厅/人民网" },
+    { "year": 2026, "month": 6, "type": "洪涝", "region": "广西", "city": "来宾", "detail": "西江2026年第1号洪水（武宣站，全国大江大河今年首次编号洪水）", "level": 4, "source": "广西水利厅/新华社" },
+    { "year": 2026, "month": 8, "type": "洪涝", "region": "福建", "city": "龙岩", "detail": "台风'简拉维'环流致龙岩暴雨到大暴雨、局地特大暴雨，漳平/龙岩站日降水量破1961年纪录，城区内涝实行'三停一休'", "level": 4, "source": "福建省气象台/年度灾情通报" },
+    { "year": 2026, "month": 8, "type": "洪涝", "region": "福建", "city": "福州", "detail": "台风'简拉维'登陆前后福州大暴雨、局地特大暴雨", "level": 3, "source": "福建省气象台" },
+    { "year": 2026, "month": 9, "type": "洪涝", "region": "福建", "city": "宁德", "detail": "台风'沙德尔'致宁德福鼎、柘荣、福安内涝、道路积水及泥石流/雨水倒灌，三地防汛Ⅰ级响应", "level": 4, "source": "人民网福建/年度灾情通报" },
+    { "year": 2026, "month": 9, "type": "洪涝", "region": "福建", "city": "莆田", "detail": "木兰溪2026年第1号洪水形成（瀨溪站10.05米），莆田暴雨预警Ⅰ级", "level": 3, "source": "人民网福建" }
   ]
 }
