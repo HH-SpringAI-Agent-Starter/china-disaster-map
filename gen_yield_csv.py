@@ -8,7 +8,7 @@
   - disaster_data.json  百年灾害事件（用于标注各县主要受灾类型）
 输出：
   - crop_yield_county.csv   全部 2975 个县级单元的减产估算
-  - yield_summary.json      省份汇总 + 减产最高 Top 县（供页面板块嵌入）
+  - yield_summary.json      省份汇总 + 全部县级单元（供页面板块嵌入）
 
 减产率口径（科普估算，与页面安全指数同源）：
     减产率(%) = round( (0.6*lc + 0.4*l2) / 4 * 40 , 1 )
@@ -166,6 +166,7 @@ summary = {
     'counties_total': len(out),
     'provinces': provinces,
     'top': top_n,
+    'counties': out,
 }
 json.dump(summary, open(os.path.join(BASE, 'yield_summary.json'), 'w', encoding='utf-8'),
           ensure_ascii=False, indent=1)
