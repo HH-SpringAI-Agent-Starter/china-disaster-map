@@ -1,0 +1,486 @@
+{
+ "updated": "2026-09",
+ "method": "减产率(%) = (0.6×百年等级lc + 0.4×2026态势l2) / 4 × 40，封顶 40%；lc/l2 取自 city_data.json（0–4）。属自然灾害暴露科普估算，非真实产量。",
+ "counties_total": 2975,
+ "provinces": [
+  {
+   "prov": "河南省",
+   "counties": 181,
+   "avg": 40.0,
+   "high": 181,
+   "mid": 0
+  },
+  {
+   "prov": "云南省",
+   "counties": 129,
+   "avg": 36.3,
+   "high": 129,
+   "mid": 0
+  },
+  {
+   "prov": "四川省",
+   "counties": 183,
+   "avg": 36.2,
+   "high": 183,
+   "mid": 0
+  },
+  {
+   "prov": "甘肃省",
+   "counties": 88,
+   "avg": 32.0,
+   "high": 88,
+   "mid": 0
+  },
+  {
+   "prov": "江苏省",
+   "counties": 104,
+   "avg": 30.9,
+   "high": 104,
+   "mid": 0
+  },
+  {
+   "prov": "青海省",
+   "counties": 45,
+   "avg": 30.0,
+   "high": 45,
+   "mid": 0
+  },
+  {
+   "prov": "新疆维吾尔自治区",
+   "counties": 108,
+   "avg": 29.6,
+   "high": 96,
+   "mid": 0
+  },
+  {
+   "prov": "河北省",
+   "counties": 190,
+   "avg": 28.0,
+   "high": 190,
+   "mid": 0
+  },
+  {
+   "prov": "湖南省",
+   "counties": 134,
+   "avg": 26.3,
+   "high": 134,
+   "mid": 0
+  },
+  {
+   "prov": "湖北省",
+   "counties": 105,
+   "avg": 26.0,
+   "high": 105,
+   "mid": 0
+  },
+  {
+   "prov": "江西省",
+   "counties": 100,
+   "avg": 24.7,
+   "high": 18,
+   "mid": 82
+  },
+  {
+   "prov": "广西壮族自治区",
+   "counties": 111,
+   "avg": 24.4,
+   "high": 10,
+   "mid": 101
+  },
+  {
+   "prov": "福建省",
+   "counties": 84,
+   "avg": 24.0,
+   "high": 0,
+   "mid": 84
+  },
+  {
+   "prov": "广东省",
+   "counties": 122,
+   "avg": 21.2,
+   "high": 0,
+   "mid": 122
+  },
+  {
+   "prov": "陕西省",
+   "counties": 107,
+   "avg": 20.0,
+   "high": 0,
+   "mid": 107
+  },
+  {
+   "prov": "宁夏回族自治区",
+   "counties": 22,
+   "avg": 18.0,
+   "high": 0,
+   "mid": 22
+  },
+  {
+   "prov": "西藏自治区",
+   "counties": 78,
+   "avg": 18.0,
+   "high": 0,
+   "mid": 78
+  },
+  {
+   "prov": "天津市",
+   "counties": 16,
+   "avg": 16.0,
+   "high": 0,
+   "mid": 16
+  },
+  {
+   "prov": "安徽省",
+   "counties": 119,
+   "avg": 16.0,
+   "high": 0,
+   "mid": 119
+  },
+  {
+   "prov": "重庆市",
+   "counties": 38,
+   "avg": 16.0,
+   "high": 0,
+   "mid": 38
+  },
+  {
+   "prov": "黑龙江省",
+   "counties": 126,
+   "avg": 15.9,
+   "high": 0,
+   "mid": 41
+  },
+  {
+   "prov": "内蒙古自治区",
+   "counties": 108,
+   "avg": 15.5,
+   "high": 0,
+   "mid": 41
+  },
+  {
+   "prov": "上海市",
+   "counties": 16,
+   "avg": 14.0,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "山西省",
+   "counties": 121,
+   "avg": 12.0,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "浙江省",
+   "counties": 90,
+   "avg": 11.9,
+   "high": 0,
+   "mid": 12
+  },
+  {
+   "prov": "吉林省",
+   "counties": 69,
+   "avg": 10.0,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "海南省",
+   "counties": 26,
+   "avg": 10.0,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "贵州省",
+   "counties": 88,
+   "avg": 10.0,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "辽宁省",
+   "counties": 100,
+   "avg": 9.3,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "山东省",
+   "counties": 151,
+   "avg": 6.0,
+   "high": 0,
+   "mid": 0
+  },
+  {
+   "prov": "北京市",
+   "counties": 16,
+   "avg": 0.0,
+   "high": 0,
+   "mid": 0
+  }
+ ],
+ "top": [
+  {
+   "code": "530624000000",
+   "name": "大关县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530629000000",
+   "name": "威信县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530622000000",
+   "name": "巧家县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530628000000",
+   "name": "彝良县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530602000000",
+   "name": "昭阳区",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530681000000",
+   "name": "水富市",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530625000000",
+   "name": "永善县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530623000000",
+   "name": "盐津县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530626000000",
+   "name": "绥江县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530627000000",
+   "name": "镇雄县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "530621000000",
+   "name": "鲁甸县",
+   "prov": "云南省",
+   "city": "昭通市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震"
+  },
+  {
+   "code": "511528000000",
+   "name": "兴文县",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511503000000",
+   "name": "南溪区",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511504000000",
+   "name": "叙州区",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511529000000",
+   "name": "屏山县",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511523000000",
+   "name": "江安县",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511526000000",
+   "name": "珙县",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511527000000",
+   "name": "筠连县",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511502000000",
+   "name": "翠屏区",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  },
+  {
+   "code": "511524000000",
+   "name": "长宁县",
+   "prov": "四川省",
+   "city": "宜宾市",
+   "lc": 4,
+   "l2": 4,
+   "safety": 0,
+   "yield_reduction_pct": 40.0,
+   "risk_tier": "高风险",
+   "main_disaster": "地震",
+   "note": "2026 5级地震；历史震区"
+  }
+ ]
+}

@@ -42,6 +42,66 @@ rec = [c for c in allc if c['safety'] >= 75]
 rec_names = '、'.join(c['name'] for c in reps(rec, 8))
 tierstat = ' · '.join(f"<span style=\"color:{TIER_COLOR[t]}\">{TIER_NAME[t]}：{tier_counts.get(t,0)}市</span>" for t in ['S','A','B','C','D'])
 
+# ---------- 一线城市安全排名（特殊查询） ----------
+# 传统四大一线城市；北京取自 top 整市单条，上海按 prov 聚合区县，广州/深圳取整市单条
+TIER1 = ['北京', '上海', '广州', '深圳']
+def resolve_t1(name):
+    for t in top:
+        if t['name'] == name: return t, t['safety']
+    for x in allc:
+        if x['name'] == name: return x, x['safety']
+    provs = {'北京': '北京', '上海': '上海', '天津': '天津', '重庆': '重庆'}
+    if name in provs:
+        vals = [x['safety'] for x in allc if x['prov'] == provs[name]]
+        if vals: return None, max(vals)
+    return None, None
+_t1 = []
+for n in TIER1:
+    c, s = resolve_t1(n)
+    _t1.append((n, s, (c['note'] if c else '') or ''))
+_t1.sort(key=lambda x: (-(x[1] if x[1] is not None else -1), x[0]))
+def t1_item(rank, name, s, note):
+    if s is None: s = 0
+    t = tier(s); col = TIER_COLOR[t]
+    note_html = f'<div class="rnote">{note}</div>' if note else ''
+    return (f'<div class="t1row">'
+        f'<div class="t1rank rank{t}">{rank}</div>'
+        f'<div class="t1body">'
+        f'<div class="t1name">{name}<span class="rbadge" style="background:{col}">{TIER_NAME[t]}</span></div>'
+        f'<div class="rtrack"><div class="rfill" style="width:{s}%;background:{col}"></div><span class="rval">{s}</span></div>'
+        f'{note_html}</div></div>')
+tier1_html = ''.join(t1_item(i+1, n, s, note) for i, (n, s, note) in enumerate(_t1))
+
+# ---------- 农村粮食减产（县级估算，特殊查询） ----------
+try:
+    YS = json.load(open(os.path.join(BASE, 'yield_summary.json'), encoding='utf-8'))
+except Exception:
+    YS = {'provinces': [], 'top': [], 'method': '', 'counties_total': 0}
+YIELD_COLOR = {'高风险': '#C4513A', '中风险': '#A8552F', '较低风险': '#C9A227', '基本无影响': '#3FA66A'}
+def y_tier(v):
+    if v >= 25: return '高风险'
+    if v >= 15: return '中风险'
+    if v >= 5:  return '较低风险'
+    return '基本无影响'
+def yrow(name, val, maxv, tierlabel, extra=''):
+    col = YIELD_COLOR.get(tierlabel, '#3FA66A')
+    w = max(2, round(val / maxv * 100)) if maxv else 0
+    return (f'<div class="yrow"><div class="yname">{name}'
+            f'<span class="rbadge" style="background:{col}">{tierlabel}</span></div>'
+            f'<div class="rtrack"><div class="rfill" style="width:{w}%;background:{col}"></div>'
+            f'<span class="rval">{("%g" % val)}</span></div>'
+            f'{("<div class=\"rnote\">"+extra+"</div>") if extra else ""}</div>')
+prov_html = ''.join(
+    yrow(p['prov'], p['avg'], 40, y_tier(p['avg']),
+         f"重灾县 {p['high']} / 共 {p['counties']} 县") for p in YS['provinces'])
+top_html = ''.join(
+    yrow(f"{t['name']}（{t['prov']}）", t['yield_reduction_pct'], 40, t['risk_tier'],
+         f"主要灾害：{t['main_disaster']}　｜　归属：{t['city']}") for t in YS['top'][:20])
+yield_html = (f'<div class="ysub">各省平均减产率（共 {YS.get("counties_total",0)} 个县级单元）</div>'
+              f'<div class="yblock">{prov_html}</div>'
+              f'<div class="ysub" style="margin-top:18px">减产最重 Top 20 县</div>'
+              f'<div class="yblock">{top_html}</div>')
+
 HTML = r'''<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -106,6 +166,25 @@ input { min-width:150px }
 .ebody .esrc { font-size:11px;color:#6E7A88;margin-top:2px }
 .foot { margin-top:26px;font-size:11.5px;color:#6E7A88;line-height:1.7;border-top:1px solid #232B35;padding-top:14px }
 .tip-ex { color:#C9A227 }
+.t1row { display:grid;grid-template-columns:58px 1fr;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid #1B232E }
+.t1row:last-child { border-bottom:none }
+.t1rank { font-size:28px;font-weight:800;text-align:center;color:#3C5A70;line-height:1 }
+.t1rank.rankS { color:#7FE0A0 } .t1rank.rankA { color:#3FA66A } .t1rank.rankB { color:#C9A227 }
+.t1rank.rankC { color:#A8552F } .t1rank.rankD { color:#C4513A }
+.t1body { min-width:0 }
+.t1name { font-size:17px;font-weight:700;color:#E6EBF0;margin-bottom:7px }
+.t1name .rbadge { margin-left:8px }
+body.tier1mode .maps, body.tier1mode .panel:not(#tier1Panel), body.tier1mode .elist, body.tier1mode .legend { display:none }
+body.tier1mode .tier1hint { display:block }
+.tier1hint { display:none;font-size:12px;color:#6E7A88;margin-top:10px }
+body.yieldmode .maps, body.yieldmode .panel:not(#yieldPanel), body.yieldmode .elist, body.yieldmode .legend { display:none }
+body.yieldmode .tier1hint { display:block }
+.yrow { padding:9px 0;border-bottom:1px solid #1B232E }
+.yrow:last-child { border-bottom:none }
+.yname { font-size:14px;font-weight:600;color:#E6EBF0;margin-bottom:6px }
+.yname .rbadge { margin-left:8px }
+.ysub { font-size:13px;color:#A9B4BF;margin-bottom:8px;font-weight:600 }
+.yblock { margin-bottom:6px }
 </style></head>
 <body><div class="wrap">
 <header>
@@ -120,6 +199,8 @@ input { min-width:150px }
     <button class="btn primary" id="bReset">重置</button>
     <button class="btn" id="bGlow">高亮最安全城市</button>
     <button class="btn" id="bDanger">高亮高危城市</button>
+    <button class="btn" id="bTier1">一线城市安全排名</button>
+    <button class="btn" id="bYield">农村粮食减产</button>
     <span style="font-size:12px;color:#6E7A88;align-self:center">悬停地图看城市详情；筛选后地图高亮命中城市</span>
   </div>
 </header>
@@ -149,6 +230,22 @@ input { min-width:150px }
     它们普遍远离地震带核心、不在七大流域最易溃口段、且非台风直接登陆区。<br>
     <span class="tip-ex">提示：</span>“安全”仅衡量自然灾害暴露度，<b>不含经济、人口、基础设施与防灾能力</b>；实际选址须结合城市总体规划与工程抗震设防。本图基于公开灾害年鉴与年度灾情通报，属科普示意，非精确统计。</div>
   <div class="bars">__BARS__</div>
+</div>
+
+<div class="panel" id="tier1Panel" style="display:none">
+  <h2>一线城市 · 自然灾害安全排名</h2>
+  <div class="lead">特殊查询：仅对比全国传统四大一线城市（北京、上海、广州、深圳）的自然灾害暴露安全指数，四城全部纳入排名。指数口径与上方“综合安全指数”一致（100 − 灾害权重惩罚）。</div>
+  <div class="tier1hint">仅显示本板块；恢复请点“重置”。</div>
+  <div class="t1wrap">__TIER1__</div>
+  <div class="lead" style="margin-top:14px">说明：本排名为自然灾害暴露度示意，非城市综合安全评价；北京因远离主要地震带、台风与七大流域最易溃口段而指数最高，上海/广州/深圳受沿海台风与流域洪涝影响指数偏低。</div>
+</div>
+
+<div class="panel" id="yieldPanel" style="display:none">
+  <h2>农村粮食减产 · 县级估算</h2>
+  <div class="lead">特殊查询：基于百年灾害等级（lc）与 2026 态势（l2）推导各县因自然灾害导致的粮食减产风险。__YIELD_METHOD__</div>
+  <div class="tier1hint">仅显示本板块；恢复请点“重置”。</div>
+  __YIELD__
+  <div class="lead" style="margin-top:14px">说明：本估算为自然灾害暴露度的科普示意，<b>非真实粮食产量</b>；未计入作物品种、灌溉与防灾工程、田间管理。实际农业风险须以农业农村部门统计为准。</div>
 </div>
 
 <div class="elist">
@@ -198,6 +295,7 @@ const META = () => (DATA && DATA.meta) || {};
 // 控件初始化
 const fYear = document.getElementById('fYear'), fMonth = document.getElementById('fMonth'),
       fType = document.getElementById('fType'), fKw = document.getElementById('fKw');
+const bTier1 = document.getElementById('bTier1'), bYield = document.getElementById('bYield');
 function buildControls() {
   const evs = EVENTS();
   const years = Array.from(new Set(evs.map(e => e.year))).sort((a,b)=>b-a);
@@ -253,12 +351,24 @@ function renderList(list) {
 fKw.addEventListener('input', apply);
 document.getElementById('bReset').onclick = () => {
   fYear.value='all'; fMonth.value='all'; fType.value='all'; fKw.value=''; clearHL(); apply();
+  bTier1.classList.remove('on'); document.body.classList.remove('tier1mode'); document.getElementById('tier1Panel').style.display='none';
+  bYield.classList.remove('on'); document.body.classList.remove('yieldmode'); document.getElementById('yieldPanel').style.display='none';
 };
 const bGlow = document.getElementById('bGlow'), bDanger = document.getElementById('bDanger'), allC = document.querySelectorAll('.city');
 bGlow.onclick = () => { clearHL(); const on = bGlow.classList.toggle('on');
   allC.forEach(g => { const s = Number(g.dataset.safety); g.classList.toggle('dim', on && s < 75); }); };
 bDanger.onclick = () => { clearHL(); const on = bDanger.classList.toggle('on');
   allC.forEach(g => { const hi = g.dataset.lc==='4'||g.dataset.l2==='4'; g.classList.toggle('dim', on && !hi); }); };
+bTier1.onclick = () => { clearHL(); const on = bTier1.classList.toggle('on');
+  if (on) { bYield.classList.remove('on'); document.body.classList.remove('yieldmode'); document.getElementById('yieldPanel').style.display='none'; }
+  document.body.classList.toggle('tier1mode', on);
+  document.getElementById('tier1Panel').style.display = on ? 'block' : 'none';
+  if (on) document.getElementById('tier1Panel').scrollIntoView({behavior:'smooth'}); };
+bYield.onclick = () => { clearHL(); const on = bYield.classList.toggle('on');
+  if (on) { bTier1.classList.remove('on'); document.body.classList.remove('tier1mode'); document.getElementById('tier1Panel').style.display='none'; }
+  document.body.classList.toggle('yieldmode', on);
+  document.getElementById('yieldPanel').style.display = on ? 'block' : 'none';
+  if (on) document.getElementById('yieldPanel').scrollIntoView({behavior:'smooth'}); };
 
 buildControls();
 apply();
@@ -267,7 +377,9 @@ apply();
 
 HTML = (HTML.replace('__SVG1__', svg1).replace('__SVG2__', svg2)
   .replace('__FALLBACK__', EVENTS_JSON).replace('__DATA_URL__', DATA_URL)
-  .replace('__BARS__', bars).replace('__TIERSTAT__', tierstat).replace('__REC_NAMES__', rec_names))
+  .replace('__BARS__', bars).replace('__TIERSTAT__', tierstat).replace('__REC_NAMES__', rec_names)
+  .replace('__TIER1__', tier1_html).replace('__YIELD__', yield_html)
+  .replace('__YIELD_METHOD__', YS.get('method', '')))
 
 open(os.path.join(BASE, 'disaster_map_city.html'), 'w', encoding='utf-8').write(HTML)
 print('disaster_map_city.html', len(HTML))
