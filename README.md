@@ -97,24 +97,6 @@
 
 3. GitHub Pages 会在数分钟内自动 rebuild，公开页面即反映最新数据。
 
-### 方式 B：Git Data API（沙箱 / 企业网 `github.com:443` 被阻断时）
-
-若直连 git 协议不通、但 `api.github.com` 可达，可用仓库内的 `push_api.py` 走 REST API 推送
-（已内置：先建 blob → tree → commit → ref）：
-
-```bash
-# token 从本地凭据管理器取，注入环境变量，明文不落盘
-export GH_TOKEN=$(git credential-manager get <<'EOF' | grep -i '^password=' | sed 's/^password=//'
-protocol=https
-host=github.com
-username=HH-SpringAI-Agent-Starter
-EOF
-)
-python push_api.py
-```
-
-> 空仓库需先用 Contents API 创建一个初始文件以建立 `main` 分支，再运行本脚本。
-
 ### 修改代码 / 重新生成页面
 
 如需调整生成逻辑，改 `gen_html_city.py` 等脚本后重跑：
@@ -138,7 +120,6 @@ python gen_html_city.py    # 生成 disaster_map_city.html
 | `gen_map.py` | 省级地图 SVG 生成（早期版本，留存参考） |
 | `gen_city_map.py` | 地级市地图 SVG 生成（合并边界 + 安全指数） |
 | `gen_html.py` / `gen_html_city.py` | 由 SVG + 数据生成 HTML（城市版为成品） |
-| `push_api.py` | Git Data API 推送脚本（绕过 git 协议受限环境） |
 | `.gitignore` | 排除 `china_cities/`、`china_full.json`、`china_boundary.json`、`*.png`、`__pycache__/` |
 
 ---
