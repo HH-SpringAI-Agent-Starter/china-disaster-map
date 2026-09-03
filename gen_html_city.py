@@ -81,6 +81,7 @@ county_html = ''.join(
 yield_html = (f'<div class="ysub">各省平均减产率（共 {YS.get("counties_total",0)} 个县级单元）</div>'
               f'<div class="yblock">{prov_html}</div>'
               f'<div class="ysub" style="margin-top:18px">全部县级单元 · 按减产率降序（共 {len(county_all)} 县）</div>'
+              f'<div class="plistbar"><input class="pfilter" id="yieldFilter" placeholder="按县 / 省筛选…" /><select class="psel" id="yieldSize"><option>50</option><option>100</option><option>200</option></select></div>'
               f'<div class="ylist">{county_html}</div>'
               f'<div class="pager" id="yieldPager"></div>')
 
@@ -159,6 +160,9 @@ body.natmode .tier1hint { display:block }
 .pginfo { font-size:13px;color:#A9B4BF }
 .pgjump { display:flex;align-items:center;gap:4px }
 .pgin { width:66px;background:#1B232E;color:#E6EBF0;border:1px solid #2E3A47;border-radius:6px;padding:5px 8px;font-size:13px }
+.plistbar { display:flex;gap:10px;align-items:center;margin:10px 0 6px }
+.pfilter { background:#1B232E;color:#E6EBF0;border:1px solid #2E3A47;border-radius:6px;padding:6px 10px;font-size:13px;font-family:inherit;min-width:210px }
+.psel { background:#1B232E;color:#E6EBF0;border:1px solid #2E3A47;border-radius:6px;padding:6px 8px;font-size:13px;font-family:inherit }
 body.yieldmode .maps, body.yieldmode .panel:not(#yieldPanel), body.yieldmode .elist, body.yieldmode .legend { display:none }
 body.yieldmode .tier1hint { display:block }
 .yrow { padding:9px 0;border-bottom:1px solid #1B232E }
@@ -218,6 +222,7 @@ body.yieldmode .tier1hint { display:block }
   <h2>全国城市 · 自然灾害安全排名</h2>
   <div class="lead">特殊查询：库内全部城市与市辖区（共 __NATCOUNT__ 个）按自然灾害暴露安全指数降序全量排名，自然包含并排好了全部一线 / 新一线城市。指数口径与上方“综合安全指数”一致（100 − 灾害权重惩罚）。</div>
   <div class="tier1hint">仅显示本板块；恢复请点“重置”。</div>
+  <div class="plistbar"><input class="pfilter" id="natFilter" placeholder="按城市 / 省筛选…" /><select class="psel" id="natSize"><option>50</option><option>100</option><option>200</option></select></div>
   <div class="natlist">__NATRANK__</div>
   <div class="pager" id="natPager"></div>
   <div class="lead" style="margin-top:14px">说明：本排名为自然灾害暴露度示意，非城市综合安全评价；“安全”仅衡量自然灾害暴露度，不含经济、人口、基础设施与防灾能力。</div>
@@ -353,21 +358,26 @@ bYield.onclick = () => { clearHL(); const on = bYield.classList.toggle('on');
   document.getElementById('yieldPanel').style.display = on ? 'block' : 'none';
   if (on) document.getElementById('yieldPanel').scrollIntoView({behavior:'smooth'}); };
 
-// 特殊面板分页（客户端，对预渲染行切片显示）
-function setupPager(box, pager, perPage){
+// 特殊面板：筛选 + 分页（客户端，对预渲染行切片显示）
+function setupList(box, pager, filterInput, sizeSel, defaultPer){
   if(!box || !pager) return;
-  const rows = Array.from(box.children);
-  const total = rows.length;
-  const pages = Math.max(1, Math.ceil(total / perPage));
-  let page = 1;
+  const all = Array.from(box.children);
+  let per = defaultPer || 50, page = 1;
   function render(){
-    const a = (page-1)*perPage, b = Math.min(a+perPage, total);
-    rows.forEach((r,i)=> r.style.display = (i>=a && i<b) ? '' : 'none');
+    const q = ((filterInput && filterInput.value) || '').trim().toLowerCase();
+    const matches = q ? all.filter(r => r.textContent.toLowerCase().indexOf(q) >= 0) : all;
+    const total = matches.length;
+    const pages = Math.max(1, Math.ceil(total / per));
+    if (page > pages) page = pages; if (page < 1) page = 1;
+    const a = (page-1)*per, b = Math.min(a+per, total);
+    all.forEach(r => r.style.display = 'none');
+    matches.slice(a, b).forEach(r => r.style.display = '');
     pager.innerHTML = '';
     const mk = (t,dis,fn)=>{ const x=document.createElement('button'); x.className='pgbtn'; x.textContent=t; x.disabled=dis; x.onclick=fn; return x; };
     pager.appendChild(mk('上一页', page<=1, ()=>{ page--; render(); }));
     const info=document.createElement('span'); info.className='pginfo';
-    info.textContent='第 '+page+' / '+pages+' 页 · 共 '+total+' 条'; pager.appendChild(info);
+    info.textContent = '第 '+page+' / '+pages+' 页 · 共 '+total+' 条' + (q ? '（筛选“'+q+'”）' : '');
+    pager.appendChild(info);
     pager.appendChild(mk('下一页', page>=pages, ()=>{ page++; render(); }));
     const jump=document.createElement('span'); jump.className='pgjump';
     const inp=document.createElement('input'); inp.type='number'; inp.min=1; inp.max=pages; inp.value=page; inp.className='pgin';
@@ -376,10 +386,12 @@ function setupPager(box, pager, perPage){
     jump.appendChild(document.createTextNode(' 跳至 ')); jump.appendChild(inp); jump.appendChild(document.createTextNode(' 页 ')); jump.appendChild(go);
     pager.appendChild(jump);
   }
+  if (filterInput) filterInput.addEventListener('input', ()=>{ page=1; render(); });
+  if (sizeSel) sizeSel.addEventListener('change', ()=>{ per=parseInt(sizeSel.value)||per; page=1; render(); });
   render();
 }
-setupPager(document.querySelector('.natlist'), document.getElementById('natPager'), 50);
-setupPager(document.querySelector('.ylist'), document.getElementById('yieldPager'), 50);
+setupList(document.querySelector('.natlist'), document.getElementById('natPager'), document.getElementById('natFilter'), document.getElementById('natSize'), 50);
+setupList(document.querySelector('.ylist'), document.getElementById('yieldPager'), document.getElementById('yieldFilter'), document.getElementById('yieldSize'), 50);
 
 buildControls();
 apply();
