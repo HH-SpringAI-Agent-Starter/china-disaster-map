@@ -38,7 +38,7 @@ nat_json = json.dumps(NAT_DATA, ensure_ascii=False).replace('</', '<\\/')
 HTML = r'''<!DOCTYPE html>
 <html lang="zh-CN"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>一线城市 / 新一线 · 自然灾害安全排名</title>
+<title>全国城市 · 自然灾害安全排名</title>
 <style>
 * { box-sizing:border-box;margin:0;padding:0 }
 body { background:#0F1319;color:#E6EBF0;font-family:"Noto Sans SC","PingFang SC",sans-serif;
@@ -73,14 +73,14 @@ a { color:#7FB4D6 }
 </style></head>
 <body><div class="wrap">
 <header>
-  <h1>一线城市 / 新一线 · 自然灾害安全排名</h1>
-  <div class="sub">基于百年灾害等级（lc）与 2026 态势（l2）推导的自然灾害暴露安全指数 · 与主页口径一致</div>
+  <h1>全国城市 · 自然灾害安全排名</h1>
+  <div class="sub">基于百年灾害等级（lc）与 2026 态势（l2）推导的自然灾害暴露安全指数 · 与主页口径一致 · 一线 / 新一线可一键筛选</div>
 </header>
 <div class="lead">指数 = 100 −（百年灾害权重×0.6 ＋ 2026 态势×0.4 ＋ 灾害带暴露惩罚）。仅衡量自然灾害暴露度，不含经济、人口、基础设施与防灾能力。<b>安全≠无灾</b>，仅表示相对暴露较低。</div>
 <div class="controls">
-  <button class="btn on" id="bT1">一线城市</button>
+  <button class="btn" id="bT1">一线城市</button>
   <button class="btn" id="bNew">新一线</button>
-  <button class="btn" id="bAll">全部城市</button>
+  <button class="btn on" id="bAll">全部城市</button>
   <input class="pfilter" id="kw" placeholder="按城市 / 省筛选…" />
   <select class="psel" id="size"><option>50</option><option>100</option><option>200</option></select>
   <button class="pgbtn" id="export" data-file="城市安全排名.csv">导出 CSV</button>
@@ -106,7 +106,7 @@ function item(d){
 }
 const list = document.getElementById('list'), pager = document.getElementById('pager');
 const kw = document.getElementById('kw'), size = document.getElementById('size');
-let mode = 't1', per = 50, page = 1;
+let mode = 'all', per = 50, page = 1;
 function base(){
   if(mode==='t1') return NAT_DATA.filter(d=>d.t1);
   if(mode==='new') return NAT_DATA.filter(d=>d.new);
@@ -163,5 +163,5 @@ render();
 </body></html>'''
 
 HTML = HTML.replace('__NATDATA__', nat_json)
-open(os.path.join(BASE, 'tier1_ranking.html'), 'w', encoding='utf-8').write(HTML)
-print('tier1_ranking.html', len(HTML))
+open(os.path.join(BASE, 'city_ranking.html'), 'w', encoding='utf-8').write(HTML)
+print('city_ranking.html', len(HTML))
