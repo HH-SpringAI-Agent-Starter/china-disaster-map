@@ -8,6 +8,11 @@ DATA = json.load(open(os.path.join(BASE, 'disaster_data.json'), encoding='utf-8'
 top = cdata['top']; allc = cdata['cities']
 EVENTS_JSON = json.dumps(DATA, ensure_ascii=False)
 DATA_URL = "https://raw.githubusercontent.com/HH-SpringAI-Agent-Starter/china-disaster-map/main/disaster_data.json"
+# 地名回退别名表：县级市/自治州/直辖市 -> 地图节点，由 build_alias.py 生成
+_alias_path = os.path.join(BASE, 'city_alias.json')
+ALIAS_JSON = (json.dumps(json.load(open(_alias_path, encoding='utf-8')),
+                         ensure_ascii=False, separators=(',', ':'))
+              if os.path.exists(_alias_path) else '{}')
 
 # ---------- 安全指数分档 ----------
 def tier(s):
@@ -280,7 +285,8 @@ body.yieldmode .tier1hint { display:block }
 <div class="foot">
   底图依据自然资源部标准地图（DataV GeoAtlas）绘制，台湾省为中国领土不可分割的一部分，南海诸岛及断续线依国家标准示意呈现。
   省级与地级市色阶为相对灾害强度示意，非精确统计。事件数据来自用户提供的 2026 年灾情梳理与 1926–2026 重大自然灾害年表，
-  并叠加已知灾害带暴露度；部分城市（如台湾花莲、台东）因数据源未提供县市分层，以省界示意并在图内标注。仅供科普参考。
+  并叠加已知灾害带暴露度；部分城市（如台湾花莲、台东）因数据源未提供县市分层，以省界示意并在图内标注。
+  地图节点为地级行政区，县级市 / 自治州 / 直辖市整市事件会回退到所属地级节点或展开为市辖区后高亮（例：汶川→阿坝、都江堰→成都、北京→全市 16 区）。仅供科普参考。
   每年更新只需在 disaster_data.json 的 events 中追加条目并重新提交到仓库，页面会自动拉取最新数据。
 </div>
 </div>
@@ -291,6 +297,20 @@ body.yieldmode .tier1hint { display:block }
 const DATA_URL = "__DATA_URL__";
 const FALLBACK = JSON.parse(document.getElementById('fallback').textContent);
 let DATA = FALLBACK;
+// 地名回退：事件里的县 / 自治州 / 直辖市整市 未必是地图节点名，按别名表逐级解析
+const ALIAS = __ALIAS__;
+const PROV_NODES = {};   // 省名 -> 该省所有地图节点（供直辖市整市展开）
+document.querySelectorAll('.city').forEach(g => {
+  const p = g.dataset.prov;
+  (PROV_NODES[p] = PROV_NODES[p] || []).push(g.dataset.name);
+});
+function resolveCity(c){
+  if (!c) return [];
+  const a = ALIAS[c];
+  if (!a) return [c];
+  if (a.charAt(0) === '@') return PROV_NODES[a.slice(1)] || [];
+  return a.split(',');
+}
 const tip = document.getElementById('tip');
 function bindTip(g){
   g.addEventListener('mousemove', e => {
@@ -354,7 +374,8 @@ function apply() {
     return true;
   });
   renderList(list);
-  const hit = new Set(list.map(e => e.city).filter(Boolean));
+  const hit = new Set();
+  list.forEach(e => { if (e.city) resolveCity(e.city).forEach(n => hit.add(n)); });
   document.querySelectorAll('.city').forEach(g => {
     const on = hit.has(g.dataset.name);
     g.classList.toggle('hit', on);
@@ -526,6 +547,7 @@ refreshData();
 </body></html>'''
 
 HTML = (HTML.replace('__SVG1__', svg1).replace('__SVG2__', svg2)
+  .replace('__ALIAS__', ALIAS_JSON)
   .replace('__FALLBACK__', EVENTS_JSON).replace('__DATA_URL__', DATA_URL)
   .replace('__BARS__', bars).replace('__TIERSTAT__', tierstat).replace('__REC_NAMES__', rec_names)
   .replace('__NATRANK__', '').replace('__NATCOUNT__', str(len(_nat))).replace('__YIELD__', yield_html)
