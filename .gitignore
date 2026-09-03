@@ -1,0 +1,9 @@
+# 原始边界 GeoJSON（体积大，重新生成地图时按需从 DataV GeoAtlas 下载）
+china_cities/
+china_full.json
+china_boundary.json
+
+# 临时与构建产物
+*.png
+__pycache__/
+*.pyc
