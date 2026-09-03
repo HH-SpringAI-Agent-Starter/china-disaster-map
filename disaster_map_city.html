@@ -2315,7 +2315,7 @@ bNat.onclick = () => { clearHL(); const on = bNat.classList.toggle('on');
   document.getElementById('natPanel').style.display = on ? 'block' : 'none';
   if (on) document.getElementById('natPanel').scrollIntoView({behavior:'smooth'}); };
 bYield.onclick = () => { clearHL(); const on = bYield.classList.toggle('on');
-  if (on) { bTier1.classList.remove('on'); document.body.classList.remove('tier1mode'); document.getElementById('tier1Panel').style.display='none'; }
+  if (on) { bNat.classList.remove('on'); document.body.classList.remove('natmode'); document.getElementById('natPanel').style.display='none'; }
   document.body.classList.toggle('yieldmode', on);
   document.getElementById('yieldPanel').style.display = on ? 'block' : 'none';
   if (on) document.getElementById('yieldPanel').scrollIntoView({behavior:'smooth'}); };
