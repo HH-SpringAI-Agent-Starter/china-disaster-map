@@ -69,6 +69,8 @@ input { min-width:150px }
 .ebody .esrc { font-size:11px;color:#6E7A88;margin-top:2px }
 .foot { margin-top:26px;font-size:11.5px;color:#6E7A88;line-height:1.7;border-top:1px solid #232B35;padding-top:14px }
 .tip-ex { color:#C9A227 }
+.extlink { color:#7FB4D6;text-decoration:underline }
+.extlink:hover { color:#A9D6F0 }
 body.natmode .maps, body.natmode .panel:not(#natPanel), body.natmode .elist, body.natmode .legend { display:none }
 body.natmode .tier1hint { display:block }
 .tier1hint { display:none;font-size:12px;color:#6E7A88;margin-top:10px }
@@ -112,7 +114,7 @@ body.yieldmode .tier1hint { display:block }
     <div class="field"><label>灾害类型</label><select id="fType"><option value="all">全部</option></select></div>
     <div class="field"><label>关键词</label><input id="fKw" placeholder="城市 / 流域 / 关键词" /></div>
     <button class="btn primary" id="bReset">重置</button>
-    <button class="btn" id="bRefresh">更新数据</button>
+    <button class="btn" id="bRefresh" title="重新拉取在线灾害事件数据（disaster_data.json），并同步刷新年份 / 类型下拉框">更新数据</button>
     <button class="btn" id="bGlow">高亮最安全城市</button>
     <button class="btn" id="bDanger">高亮高危城市</button>
     <button class="btn" id="bNat">全国城市安全排名</button>
@@ -212,6 +214,7 @@ body.yieldmode .tier1hint { display:block }
 <div class="panel" id="natPanel" style="display:none">
   <h2>全国城市 · 自然灾害安全排名</h2>
   <div class="lead">特殊查询：库内全部城市与市辖区（共 500 个）按自然灾害暴露安全指数降序全量排名，自然包含并排好了全部一线 / 新一线城市。指数口径与上方“综合安全指数”一致（100 − 灾害权重惩罚）。</div>
+  <div class="lead" style="margin-top:8px">📄 独立可分享排名页（含完整切换 / 分页 / 导出 CSV）：<a class="extlink" href="city_ranking.html" target="_blank" rel="noopener">city_ranking.html</a></div>
   <div class="tier1hint">仅显示本板块；恢复请点“重置”。</div>
   <div class="plistbar"><input class="pfilter" id="natFilter" placeholder="按城市 / 省筛选…" /><select class="psel" id="natSize"><option>50</option><option>100</option><option>200</option></select><button class="pgbtn" id="natT1">一线城市</button><button class="pgbtn" id="natNew">新一线</button><button class="pgbtn" id="natGroup">按省分组</button><button class="pgbtn" id="natExport" data-file="城市安全排名.csv">导出 CSV</button></div>
   <div class="natlist" id="natList"></div>
@@ -248,7 +251,7 @@ const DATA_URL = "https://raw.githubusercontent.com/HH-SpringAI-Agent-Starter/ch
 const FALLBACK = JSON.parse(document.getElementById('fallback').textContent);
 let DATA = FALLBACK;
 const tip = document.getElementById('tip');
-document.querySelectorAll('.city').forEach(g => {
+function bindTip(g){
   g.addEventListener('mousemove', e => {
     const d = g.dataset;
     tip.innerHTML = `<b>${d.name}</b> <span class="k">${d.prov}</span><br>
@@ -258,12 +261,19 @@ document.querySelectorAll('.city').forEach(g => {
     tip.style.left = (e.clientX+14)+'px'; tip.style.top = (e.clientY+14)+'px'; tip.style.opacity = 1;
   });
   g.addEventListener('mouseleave', () => tip.style.opacity = 0);
-});
+}
+document.querySelectorAll('.city').forEach(bindTip);
 
 // 数据加载：优先在线，失败回退内置；可手动触发（更新数据按钮）
 function refreshData(){
+  const curY = fYear.value, curM = fMonth.value, curT = fType.value;
   return fetch(DATA_URL).then(r => r.ok ? r.json() : Promise.reject()).then(d => {
-    DATA = d; document.getElementById('src').textContent =
+    DATA = d;
+    buildControls();  // 在线数据可能含新年份 / 新类型，重建下拉框
+    fYear.value  = [...fYear.options].some(o => o.value === curY) ? curY : 'all';
+    fMonth.value = [...fMonth.options].some(o => o.value === curM) ? curM : 'all';
+    fType.value  = [...fType.options].some(o => o.value === curT) ? curT : 'all';
+    document.getElementById('src').textContent =
       '数据来源：在线更新（updated ' + (d.meta && d.meta.updated || '?') + '）· ' + (d.events ? d.events.length : 0) + ' 条事件';
     apply();
   }).catch(() => {
@@ -319,7 +329,7 @@ function renderList(list) {
   document.getElementById('elist').innerHTML = sorted.map(e => {
     const col = tc[e.type] || '#888';
     const mo = e.month ? (e.month + ' 月') : '';
-    const loc = [e.city, e.city ? e.region : e.region].filter(Boolean).join(' · ');
+    const loc = [e.city, e.region].filter(Boolean).join(' · ');
     return `<div class="ecard">
       <div class="eyr">${e.year}<span class="emo">${mo}</span></div>
       <div class="ebody">
@@ -452,7 +462,9 @@ setupSpecial({box:document.getElementById('yieldList'), pager:document.getElemen
 // 地图点击全屏放大
 document.querySelectorAll('.mapcard svg').forEach(svg => {
   svg.addEventListener('click', () => {
-    document.getElementById('mapZoomInner').innerHTML = svg.outerHTML;
+    const inner = document.getElementById('mapZoomInner');
+    inner.innerHTML = svg.outerHTML;
+    inner.querySelectorAll('.city').forEach(bindTip);  // 全屏视图也支持悬停查看城市详情
     document.getElementById('mapZoom').classList.add('show');
   });
 });
