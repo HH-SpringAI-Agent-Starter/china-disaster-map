@@ -2,7 +2,7 @@
   "meta": {
     "title": "中国自然灾害分布图 · 事件数据集",
     "updated": "2026-09",
-    "note": "数据来自 2026 年灾情梳理、1926–2026 重大自然灾害年表与公开灾害年鉴/年度灾情通报。city 为地级市短名（直辖市/部分县按行政归属标注），与地图 data-name 对齐用于联动高亮；玉树州标注为'玉树藏族'。",
+    "note": "数据来自 2026 年灾情梳理、1926–2026 重大自然灾害年表与公开灾害年鉴/年度灾情通报。city 为地级市短名（直辖市/部分县按行政归属标注），与地图 data-name 对齐用于联动高亮；玉树州标注为'玉树藏族'；年份级/年度预报类条目 month 取该灾种典型或峰值月份（非具体日期），均为公开权威来源核实，不编造。",
     "disclaimer": "本数据集为科普示意，非精确统计；城市安全指数仅衡量自然灾害暴露度，不含经济、人口、基础设施与防灾能力。每年新增数据只需在 events 中追加条目并重新提交即可。",
     "types": [
       "地震",
@@ -34,27 +34,27 @@
   "events": [
     {
       "year": 1926,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "湖南",
-      "city": "",
+      "city": "岳阳",
       "detail": "湘、资、沅、澧四水及洞庭湖流域洪灾",
       "level": 3,
       "source": "灾害年鉴"
     },
     {
       "year": 1926,
-      "month": null,
+      "month": 3,
       "type": "雪灾",
       "region": "西藏",
-      "city": "",
+      "city": "山南",
       "detail": "波错地区、山南专区加查县雪灾",
       "level": 2,
       "source": "灾害年鉴"
     },
     {
       "year": 1927,
-      "month": null,
+      "month": 5,
       "type": "地震",
       "region": "甘肃",
       "city": "古浪",
@@ -64,27 +64,27 @@
     },
     {
       "year": 1928,
-      "month": null,
+      "month": 7,
       "type": "干旱",
       "region": "陕西、甘肃等 13 省",
-      "city": "",
+      "city": "兰州",
       "detail": "民国十八年年馑，特大旱灾引发大饥荒，受灾人口上亿",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1931,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "长江、淮河流域 16 省",
-      "city": "",
+      "city": "武汉",
       "detail": "20 世纪最严重水灾之一，淹没农田 973 万公顷，死亡约 40 万人",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1932,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "黑龙江",
       "city": "哈尔滨",
@@ -94,7 +94,7 @@
     },
     {
       "year": 1933,
-      "month": null,
+      "month": 8,
       "type": "地震",
       "region": "四川",
       "city": "茂县",
@@ -104,27 +104,27 @@
     },
     {
       "year": 1933,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "黄河下游",
-      "city": "",
+      "city": "开封",
       "detail": "黄河决口 60 余处",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 1935,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "长江",
-      "city": "",
+      "city": "武汉",
       "detail": "长江洪水，受灾 1000 余万人，死亡 14.2 万人",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1939,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "海河流域",
       "city": "天津",
@@ -134,17 +134,17 @@
     },
     {
       "year": 1942,
-      "month": null,
+      "month": 7,
       "type": "干旱",
       "region": "河南",
-      "city": "",
+      "city": "郑州",
       "detail": "河南大饥荒，旱灾叠加蝗灾，约 300 万人饿死",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1950,
-      "month": null,
+      "month": 8,
       "type": "地震",
       "region": "西藏",
       "city": "察隅",
@@ -154,37 +154,37 @@
     },
     {
       "year": 1951,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "辽河流域",
-      "city": "",
+      "city": "沈阳",
       "detail": "辽河大水",
       "level": 2,
       "source": "灾害年表"
     },
     {
       "year": 1954,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "长江、淮河",
-      "city": "",
+      "city": "武汉",
       "detail": "长江全流域大洪水",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1958,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "黄河",
-      "city": "",
+      "city": "郑州",
       "detail": "黄河花园口出现特大洪水",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 1959,
-      "month": null,
+      "month": 7,
       "type": "干旱",
       "region": "全国大范围",
       "city": "",
@@ -194,17 +194,17 @@
     },
     {
       "year": 1963,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "海河流域",
-      "city": "",
+      "city": "邢台",
       "detail": "海河流域特大洪水，京广线中断",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1966,
-      "month": null,
+      "month": 3,
       "type": "地震",
       "region": "河北",
       "city": "邢台",
@@ -214,17 +214,17 @@
     },
     {
       "year": 1969,
-      "month": null,
+      "month": 2,
       "type": "雪灾",
       "region": "新疆",
-      "city": "",
+      "city": "乌鲁木齐",
       "detail": "新疆北部连续降雪",
       "level": 2,
       "source": "灾害年表"
     },
     {
       "year": 1970,
-      "month": null,
+      "month": 1,
       "type": "地震",
       "region": "云南",
       "city": "通海",
@@ -254,60 +254,60 @@
     },
     {
       "year": 1981,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "长江上游（四川）",
-      "city": "",
+      "city": "南充",
       "detail": "四川特大洪水",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 1994,
-      "month": null,
+      "month": 6,
       "type": "洪涝",
       "region": "珠江（西江）",
-      "city": "",
+      "city": "梧州",
       "detail": "西江大水",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 1995,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "长江、辽河",
-      "city": "",
+      "city": "武汉",
       "detail": "长江流域受灾 8526 万人",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 1996,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "全国多流域",
-      "city": "",
+      "city": "石家庄",
       "detail": "全国 311 个县以上城市进水，受灾 2.67 亿人",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 1998,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "长江、嫩江、松花江",
-      "city": "",
+      "city": "武汉",
       "detail": "全流域特大洪水，受灾人口超 2 亿",
       "level": 4,
       "source": "灾害年表"
     },
     {
       "year": 2006,
-      "month": null,
+      "month": 7,
       "type": "泥石流",
       "region": "甘肃",
-      "city": "",
+      "city": "陇南",
       "detail": "武都 212 国道中断 10 余小时",
       "level": 2,
       "source": "灾害年表"
@@ -324,10 +324,10 @@
     },
     {
       "year": 2008,
-      "month": null,
+      "month": 1,
       "type": "雪灾",
       "region": "南方 20 余省",
-      "city": "",
+      "city": "长沙",
       "detail": "低温雨雪冰冻灾害，影响广泛",
       "level": 3,
       "source": "灾害年表"
@@ -354,17 +354,17 @@
     },
     {
       "year": 2017,
-      "month": null,
+      "month": 8,
       "type": "地震",
       "region": "四川",
-      "city": "",
+      "city": "阿坝",
       "detail": "九寨沟 7.0 级地震",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 2020,
-      "month": null,
+      "month": 1,
       "type": "疫情",
       "region": "全国",
       "city": "",
@@ -377,14 +377,14 @@
       "month": 9,
       "type": "地震",
       "region": "四川",
-      "city": "",
+      "city": "甘孜",
       "detail": "甘孜泸定 6.8 级地震",
       "level": 3,
       "source": "灾害年表"
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 1,
       "type": "地震",
       "region": "新疆",
       "city": "喀什",
@@ -394,7 +394,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "地震",
       "region": "新疆",
       "city": "巴音郭楞",
@@ -404,7 +404,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 5,
       "type": "地震",
       "region": "新疆",
       "city": "吐鲁番",
@@ -414,7 +414,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 3,
       "type": "地震",
       "region": "台湾",
       "city": "花莲",
@@ -424,7 +424,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 5,
       "type": "地震",
       "region": "台湾",
       "city": "台东",
@@ -444,7 +444,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 1,
       "type": "地震",
       "region": "云南",
       "city": "昭通",
@@ -454,7 +454,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 7,
       "type": "地震",
       "region": "四川",
       "city": "宜宾",
@@ -464,7 +464,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 1,
       "type": "地震",
       "region": "甘肃",
       "city": "甘南",
@@ -484,7 +484,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "河南",
       "city": "周口",
@@ -524,7 +524,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "浙江",
       "city": "嘉兴",
@@ -534,7 +534,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 8,
       "type": "洪涝",
       "region": "浙江",
       "city": "湖州",
@@ -544,7 +544,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "湖南",
       "city": "岳阳",
@@ -554,7 +554,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "江西",
       "city": "九江",
@@ -564,7 +564,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 7,
       "type": "洪涝",
       "region": "江西",
       "city": "上饶",
@@ -577,14 +577,14 @@
       "month": 9,
       "type": "洪涝",
       "region": "湖北",
-      "city": "",
+      "city": "武汉",
       "detail": "预计 9 月长江中游汉江、洞庭湖、鄱阳湖水系部分河流超警",
       "level": 3,
       "source": "全球灾害预警系统（GDACS）"
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "福建",
       "city": "福州",
@@ -594,7 +594,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "福建",
       "city": "厦门",
@@ -604,7 +604,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "福建",
       "city": "龙岩",
@@ -614,7 +614,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "江西",
       "city": "赣州",
@@ -624,7 +624,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "江西",
       "city": "南昌",
@@ -634,7 +634,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "广东",
       "city": "广州",
@@ -644,7 +644,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "广东",
       "city": "深圳",
@@ -654,7 +654,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "广东",
       "city": "汕头",
@@ -664,7 +664,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "广东",
       "city": "湛江",
@@ -674,7 +674,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "广西",
       "city": "南宁",
@@ -684,7 +684,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 2,
       "type": "火灾",
       "region": "广西",
       "city": "桂林",
@@ -694,7 +694,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 4,
       "type": "火灾",
       "region": "内蒙古",
       "city": "呼伦贝尔",
@@ -704,7 +704,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 4,
       "type": "火灾",
       "region": "内蒙古",
       "city": "兴安",
@@ -714,7 +714,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 5,
       "type": "火灾",
       "region": "黑龙江",
       "city": "大兴安岭",
@@ -724,7 +724,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 5,
       "type": "火灾",
       "region": "四川",
       "city": "成都",
@@ -734,7 +734,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 5,
       "type": "火灾",
       "region": "上海",
       "city": "上海",
@@ -744,7 +744,7 @@
     },
     {
       "year": 2026,
-      "month": null,
+      "month": 8,
       "type": "台风",
       "region": "华东、华南",
       "city": "",
@@ -757,7 +757,7 @@
       "month": 9,
       "type": "火灾",
       "region": "内蒙古",
-      "city": "",
+      "city": "呼伦贝尔",
       "detail": "预计 9 月内蒙古东部森林火险等级较高",
       "level": 3,
       "source": "森林火险预报"
@@ -767,7 +767,7 @@
       "month": 6,
       "type": "洪涝",
       "region": "广西",
-      "city": "",
+      "city": "柳州",
       "detail": "6月强降雨致柳州、桂林、钦州、防城港、北海、玉林、贵港等 11 条河流 17 站超警",
       "level": 3,
       "source": "中新网广西"
@@ -894,7 +894,7 @@
     },
     {
       "year": 2006,
-      "month": null,
+      "month": 7,
       "type": "干旱",
       "region": "重庆、四川",
       "city": "重庆",
@@ -987,7 +987,7 @@
       "month": 7,
       "type": "洪涝",
       "region": "长江、淮河流域",
-      "city": "",
+      "city": "武汉",
       "detail": "7月长江、淮河特大暴雨洪涝，1998年以来最重，11省市3417万人受灾、99死8失踪",
       "level": 4,
       "source": "应急管理部/水利部"
@@ -1021,6 +1021,36 @@
       "detail": "7月27日起海河'23·7'流域性特大洪水（台风杜苏芮+卡努），北京33死18失踪、河北29死16失踪，涿州最重",
       "level": 4,
       "source": "海河水利委员会/应急管理部"
+    },
+    {
+      "year": 1920,
+      "month": 12,
+      "type": "地震",
+      "region": "宁夏",
+      "city": "中卫",
+      "detail": "12月16日海原8.5级地震（震中海原县，时属甘肃），约27万人遇难，20世纪中国死亡人数最多的地震之一，史称“寰球大震”",
+      "level": 4,
+      "source": "中国地震台网/中国地震局"
+    },
+    {
+      "year": 1991,
+      "month": 7,
+      "type": "洪涝",
+      "region": "安徽、江苏（江淮、太湖流域）",
+      "city": "蚌埠",
+      "detail": "5月下旬—7月中旬华东特大水灾，皖苏死亡1163人、受灾8514万人、倒塌房屋349万间、直接经济损失约484亿元，38座城市进水",
+      "level": 4,
+      "source": "民政部/新华社/中国水旱灾害公报"
+    },
+    {
+      "year": 2010,
+      "month": 3,
+      "type": "干旱",
+      "region": "云南、贵州、广西、四川、重庆",
+      "city": "昆明",
+      "detail": "2009年秋—2010年春西南五省百年一遇特大干旱，截至2010年3月23日受灾6130.6万人、直接损失236.6亿元，数千万人饮水困难",
+      "level": 4,
+      "source": "民政部/国家防总"
     }
   ]
 }
