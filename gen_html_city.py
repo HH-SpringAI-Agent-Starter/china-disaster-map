@@ -50,7 +50,12 @@ for t in top:
     if t['name'] not in _seen:
         _nat.append(t); _seen.add(t['name'])
 _nat.sort(key=lambda c: (-c['safety'], c['prov'], c['name']))
-nat_html = ''.join(bar(c) for c in _nat)
+NAT_DATA = [{'name': c['name'], 'prov': c['prov'], 'safety': c['safety'],
+             'tierLabel': TIER_NAME[tier(c['safety'])], 'tierColor': TIER_COLOR[tier(c['safety'])],
+             'note': (c.get('note') or ''),
+             'search': (c['name'] + ' ' + c['prov'] + ' ' + TIER_NAME[tier(c['safety'])] + ' ' + (c.get('note') or '')).lower()}
+            for c in _nat]
+nat_json = json.dumps(NAT_DATA, ensure_ascii=False).replace('</', '<\\/')
 
 # ---------- 农村粮食减产（县级估算，特殊查询） ----------
 try:
@@ -75,14 +80,19 @@ prov_html = ''.join(
     yrow(p['prov'], p['avg'], 40, y_tier(p['avg']),
          f"重灾县 {p['high']} / 共 {p['counties']} 县") for p in YS['provinces'])
 county_all = YS.get('counties', []) or YS.get('top', [])
-county_html = ''.join(
-    yrow(f"{t['name']}（{t['prov']}）", t['yield_reduction_pct'], 40, t['risk_tier'],
-         f"主要灾害：{t['main_disaster']}　｜　归属：{t['city']}") for t in county_all)
+COUNTY_DATA = [{'name': t['name'], 'prov': t['prov'], 'pct': t['yield_reduction_pct'],
+                'tierLabel': t['risk_tier'], 'tierColor': YIELD_COLOR.get(t['risk_tier'], '#3FA66A'),
+                'main': t.get('main_disaster', ''), 'city': t.get('city', ''),
+                'search': (t['name'] + ' ' + t['prov'] + ' ' + t.get('main_disaster', '') + ' ' + t.get('city', '')).lower()}
+               for t in county_all]
+county_json = json.dumps(COUNTY_DATA, ensure_ascii=False).replace('</', '<\\/')
 yield_html = (f'<div class="ysub">各省平均减产率（共 {YS.get("counties_total",0)} 个县级单元）</div>'
               f'<div class="yblock">{prov_html}</div>'
               f'<div class="ysub" style="margin-top:18px">全部县级单元 · 按减产率降序（共 {len(county_all)} 县）</div>'
-              f'<div class="plistbar"><input class="pfilter" id="yieldFilter" placeholder="按县 / 省筛选…" /><select class="psel" id="yieldSize"><option>50</option><option>100</option><option>200</option></select></div>'
-              f'<div class="ylist">{county_html}</div>'
+              f'<div class="plistbar"><input class="pfilter" id="yieldFilter" placeholder="按县 / 省筛选…" /><select class="psel" id="yieldSize"><option>50</option><option>100</option><option>200</option></select>'
+              f'<button class="pgbtn" id="yieldGroup">按省分组</button>'
+              f'<button class="pgbtn" id="yieldExport" data-file="县级粮食减产.csv">导出 CSV</button></div>'
+              f'<div class="ylist" id="yieldList"></div>'
               f'<div class="pager" id="yieldPager"></div>')
 
 HTML = r'''<!DOCTYPE html>
@@ -171,6 +181,15 @@ body.yieldmode .tier1hint { display:block }
 .yname .rbadge { margin-left:8px }
 .ysub { font-size:13px;color:#A9B4BF;margin-bottom:8px;font-weight:600 }
 .yblock { margin-bottom:6px }
+.grp { border-bottom:1px solid #1B232E }
+.grph { display:flex;justify-content:space-between;align-items:center;padding:8px 8px;cursor:pointer;
+  background:#141B23;position:sticky;top:0;font-weight:700;color:#E6EBF0;z-index:2 }
+.grph:hover { background:#19222C }
+.grpt { font-size:14px }
+.grpc { font-size:12px;color:#8E99A6;font-weight:400 }
+.grpb { padding:2px 0 }
+.grpb.collapsed { display:none }
+.pgbtn.on { background:#2E4757;color:#fff;border-color:#3C5A70 }
 </style></head>
 <body><div class="wrap">
 <header>
@@ -222,8 +241,8 @@ body.yieldmode .tier1hint { display:block }
   <h2>全国城市 · 自然灾害安全排名</h2>
   <div class="lead">特殊查询：库内全部城市与市辖区（共 __NATCOUNT__ 个）按自然灾害暴露安全指数降序全量排名，自然包含并排好了全部一线 / 新一线城市。指数口径与上方“综合安全指数”一致（100 − 灾害权重惩罚）。</div>
   <div class="tier1hint">仅显示本板块；恢复请点“重置”。</div>
-  <div class="plistbar"><input class="pfilter" id="natFilter" placeholder="按城市 / 省筛选…" /><select class="psel" id="natSize"><option>50</option><option>100</option><option>200</option></select></div>
-  <div class="natlist">__NATRANK__</div>
+  <div class="plistbar"><input class="pfilter" id="natFilter" placeholder="按城市 / 省筛选…" /><select class="psel" id="natSize"><option>50</option><option>100</option><option>200</option></select><button class="pgbtn" id="natGroup">按省分组</button><button class="pgbtn" id="natExport" data-file="城市安全排名.csv">导出 CSV</button></div>
+  <div class="natlist" id="natList"></div>
   <div class="pager" id="natPager"></div>
   <div class="lead" style="margin-top:14px">说明：本排名为自然灾害暴露度示意，非城市综合安全评价；“安全”仅衡量自然灾害暴露度，不含经济、人口、基础设施与防灾能力。</div>
 </div>
@@ -358,40 +377,94 @@ bYield.onclick = () => { clearHL(); const on = bYield.classList.toggle('on');
   document.getElementById('yieldPanel').style.display = on ? 'block' : 'none';
   if (on) document.getElementById('yieldPanel').scrollIntoView({behavior:'smooth'}); };
 
-// 特殊面板：筛选 + 分页（客户端，对预渲染行切片显示）
-function setupList(box, pager, filterInput, sizeSel, defaultPer){
+// 特殊面板：筛选 + 分页 + 按省分组 + 导出 CSV（数据驱动）
+const NAT_DATA = __NATDATA__;
+const COUNTY_DATA = __COUNTYDATA__;
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function csvCell(v){ v = String(v==null?'':v); if(/[",\n\r]/.test(v)) v = '"'+v.replace(/"/g,'""')+'"'; return v; }
+function natItem(d){
+  return `<div class="row">
+    <div class="rname">${esc(d.name)}<span class="rprov">${esc(d.prov)}</span><span class="rbadge" style="background:${d.tierColor}">${esc(d.tierLabel)}</span></div>
+    <div class="rtrack"><div class="rfill" style="width:${d.safety}%;background:${d.tierColor}"></div><span class="rval">${d.safety}</span></div>
+    ${d.note?`<div class="rnote">${esc(d.note)}</div>`:''}
+  </div>`;
+}
+function yieldItem(d){
+  const w = Math.max(2, Math.round(parseFloat(d.pct)/40*100));
+  return `<div class="yrow"><div class="yname">${esc(d.name)}<span class="rbadge" style="background:${d.tierColor}">${esc(d.tierLabel)}</span></div>
+    <div class="rtrack"><div class="rfill" style="width:${w}%;background:${d.tierColor}"></div><span class="rval">${parseFloat(d.pct)}</span></div>
+    ${d.main||d.city?`<div class="rnote">主要灾害：${esc(d.main)}　｜　归属：${esc(d.city)}</div>`:''}</div>`;
+}
+function setupSpecial(cfg){
+  const {box, pager, filterInput, sizeSel, groupBtn, exportBtn, data, renderItem, groupKey, searchOf, cols} = cfg;
   if(!box || !pager) return;
-  const all = Array.from(box.children);
-  let per = defaultPer || 50, page = 1;
+  let per = parseInt(sizeSel && sizeSel.value) || 50, page = 1, grouped = false;
+  function filtered(){
+    const q = (filterInput && filterInput.value || '').trim().toLowerCase();
+    return q ? data.filter(d => searchOf(d).indexOf(q) >= 0) : data.slice();
+  }
   function render(){
-    const q = ((filterInput && filterInput.value) || '').trim().toLowerCase();
-    const matches = q ? all.filter(r => r.textContent.toLowerCase().indexOf(q) >= 0) : all;
-    const total = matches.length;
+    const q = (filterInput && filterInput.value || '').trim().toLowerCase();
+    const flt = filtered();
+    const total = flt.length;
+    if (grouped){
+      const map = new Map();
+      flt.forEach(d => { const k = groupKey(d); if(!map.has(k)) map.set(k, []); map.get(k).push(d); });
+      let html = '';
+      map.forEach((arr, k) => {
+        html += `<div class="grp"><div class="grph"><span class="grpt">${esc(k)}</span><span class="grpc">${arr.length} 个</span></div><div class="grpb">`
+              + arr.map(renderItem).join('') + `</div></div>`;
+      });
+      box.innerHTML = html || '<div class="rnote">没有匹配的结果。</div>';
+      pager.innerHTML = '';
+      const info=document.createElement('span'); info.className='pginfo';
+      info.textContent = '分组模式 · 共 '+total+' 条' + (q ? '（筛选“'+esc(q)+'”）' : '');
+      pager.appendChild(info);
+      return;
+    }
     const pages = Math.max(1, Math.ceil(total / per));
     if (page > pages) page = pages; if (page < 1) page = 1;
     const a = (page-1)*per, b = Math.min(a+per, total);
-    all.forEach(r => r.style.display = 'none');
-    matches.slice(a, b).forEach(r => r.style.display = '');
+    box.innerHTML = flt.slice(a, b).map(renderItem).join('') || '<div class="rnote">没有匹配的结果。</div>';
     pager.innerHTML = '';
-    const mk = (t,dis,fn)=>{ const x=document.createElement('button'); x.className='pgbtn'; x.textContent=t; x.disabled=dis; x.onclick=fn; return x; };
-    pager.appendChild(mk('上一页', page<=1, ()=>{ page--; render(); }));
+    const mk=(t,dis,fn)=>{const x=document.createElement('button');x.className='pgbtn';x.textContent=t;x.disabled=dis;x.onclick=fn;return x;};
+    pager.appendChild(mk('上一页', page<=1, ()=>{page--;render();}));
     const info=document.createElement('span'); info.className='pginfo';
-    info.textContent = '第 '+page+' / '+pages+' 页 · 共 '+total+' 条' + (q ? '（筛选“'+q+'”）' : '');
+    info.textContent='第 '+page+' / '+pages+' 页 · 共 '+total+' 条'+(q?'（筛选“'+esc(q)+'”）':'');
     pager.appendChild(info);
-    pager.appendChild(mk('下一页', page>=pages, ()=>{ page++; render(); }));
+    pager.appendChild(mk('下一页', page>=pages, ()=>{page++;render();}));
     const jump=document.createElement('span'); jump.className='pgjump';
     const inp=document.createElement('input'); inp.type='number'; inp.min=1; inp.max=pages; inp.value=page; inp.className='pgin';
-    inp.onchange=()=>{ let v=parseInt(inp.value)||1; v=Math.max(1, Math.min(pages, v)); page=v; render(); };
+    inp.onchange=()=>{let v=parseInt(inp.value)||1;v=Math.max(1,Math.min(pages,v));page=v;render();};
     const go=document.createElement('button'); go.className='pgbtn'; go.textContent='跳转'; go.onclick=()=>inp.onchange();
     jump.appendChild(document.createTextNode(' 跳至 ')); jump.appendChild(inp); jump.appendChild(document.createTextNode(' 页 ')); jump.appendChild(go);
     pager.appendChild(jump);
   }
-  if (filterInput) filterInput.addEventListener('input', ()=>{ page=1; render(); });
-  if (sizeSel) sizeSel.addEventListener('change', ()=>{ per=parseInt(sizeSel.value)||per; page=1; render(); });
+  if (filterInput) filterInput.addEventListener('input', ()=>{page=1;render();});
+  if (sizeSel) sizeSel.addEventListener('change', ()=>{per=parseInt(sizeSel.value)||per;page=1;render();});
+  if (groupBtn) groupBtn.addEventListener('click', ()=>{ grouped=!grouped; groupBtn.classList.toggle('on', grouped); render(); });
+  box.addEventListener('click', e => { const h=e.target.closest('.grph'); if(h) h.nextElementSibling.classList.toggle('collapsed'); });
+  if (exportBtn) exportBtn.addEventListener('click', ()=>{
+    const flt = filtered();
+    const lines = [cols.map(c=>c.label).join(',')];
+    flt.forEach(d => lines.push(cols.map(c=>csvCell(d[c.key])).join(',')));
+    const blob = new Blob(['﻿'+lines.join('\r\n')], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href=url; a.download=exportBtn.dataset.file||'export.csv'; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  });
   render();
 }
-setupList(document.querySelector('.natlist'), document.getElementById('natPager'), document.getElementById('natFilter'), document.getElementById('natSize'), 50);
-setupList(document.querySelector('.ylist'), document.getElementById('yieldPager'), document.getElementById('yieldFilter'), document.getElementById('yieldSize'), 50);
+setupSpecial({box:document.getElementById('natList'), pager:document.getElementById('natPager'),
+  filterInput:document.getElementById('natFilter'), sizeSel:document.getElementById('natSize'),
+  groupBtn:document.getElementById('natGroup'), exportBtn:document.getElementById('natExport'),
+  data:NAT_DATA, renderItem:natItem, groupKey:d=>d.prov, searchOf:d=>d.search,
+  cols:[{key:'name',label:'城市'},{key:'prov',label:'省份'},{key:'safety',label:'安全指数'},{key:'tierLabel',label:'风险档'},{key:'note',label:'备注'}]});
+setupSpecial({box:document.getElementById('yieldList'), pager:document.getElementById('yieldPager'),
+  filterInput:document.getElementById('yieldFilter'), sizeSel:document.getElementById('yieldSize'),
+  groupBtn:document.getElementById('yieldGroup'), exportBtn:document.getElementById('yieldExport'),
+  data:COUNTY_DATA, renderItem:yieldItem, groupKey:d=>d.prov, searchOf:d=>d.search,
+  cols:[{key:'name',label:'县'},{key:'prov',label:'省份'},{key:'pct',label:'减产率_百分比'},{key:'tierLabel',label:'风险档'},{key:'main',label:'主要灾害'},{key:'city',label:'归属市'}]});
 
 buildControls();
 apply();
@@ -401,7 +474,8 @@ apply();
 HTML = (HTML.replace('__SVG1__', svg1).replace('__SVG2__', svg2)
   .replace('__FALLBACK__', EVENTS_JSON).replace('__DATA_URL__', DATA_URL)
   .replace('__BARS__', bars).replace('__TIERSTAT__', tierstat).replace('__REC_NAMES__', rec_names)
-  .replace('__NATRANK__', nat_html).replace('__NATCOUNT__', str(len(_nat))).replace('__YIELD__', yield_html)
+  .replace('__NATRANK__', '').replace('__NATCOUNT__', str(len(_nat))).replace('__YIELD__', yield_html)
+  .replace('__NATDATA__', nat_json).replace('__COUNTYDATA__', county_json)
   .replace('__YIELD_METHOD__', YS.get('method', '')))
 
 open(os.path.join(BASE, 'disaster_map_city.html'), 'w', encoding='utf-8').write(HTML)
